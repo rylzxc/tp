@@ -155,6 +155,41 @@ Classes used by multiple components are in the `seedu.addressbook.commons` packa
 
 This section describes some noteworthy details on how certain features are implemented.
 
+### Add feature
+
+#### Implementation
+
+The "add" feature is facilitated by `AddCommand` and `AddCommandParser` classes. The `parse` method in `AddCommandParser`
+checks if mandatory fields are first present. If all are present, a new `Internship` will be created with any optional
+fields present. The new `Internship` will be added in a sorted-by-date order.
+
+Below shows the sequence diagram of adding a new internship application into the list which automatically sorts using `SortedList`.
+Trivial logic and model details are omitted as they are already explained in the Architecture section above.
+
+<img src="images/AddCommandSequenceDiagram.png" width="550" />
+
+#### Design considerations:
+
+**Aspect: `Stage` field:**
+
+* **Alternative 1 (current choice):** Not restricting to enums, (proposed: warn if input does not match general stages)
+    * Pros: Flexibility for user by allowing unique stages from different companies which we did not prepare for to be added.
+    * Cons: Will not have stage-specific tips that have been gathered for more general interview stages.
+
+* **Alternative 2:** Restricting to enums
+    * Pros: Prevent the need for user to edit previous command in the event of a typo,
+    * Cons: Flexibility is heavily restricted, user may encounter stages that we may not have prepared for, which may annoy the user if the user is not allowed to add the stage into the internship tracker.
+
+**Aspect: `DateTime` field:**
+
+* **Alternative 1 (current choice):** Not modularizing Time and Date
+    * Pros: Most stages have a date and time associated with it. Making one of the two optional takes extra effort for something that uncommon. Can be left to later stages of development.
+    * Cons: May not be prepared for stages without date and/or time, therefore not making the tracker flexible enough.
+
+* **Alternative 2:** Modularizing Time and Date
+    * Pros: Some stages that we may not have prepared for may omit date or time, encouraging flexibility of the tracker.
+    * Cons: Effort required is too high in the early stages of development whereby a functional product is prioritized.
+
 ### Undo/Redo feature
 
 #### Implementation
@@ -273,33 +308,31 @@ _{Explain here how the data archiving feature will be implemented}_
 
 Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unlikely to have) - `*`
 
-| Priority | As a …​                                       | I want to …​                                                                           | So that I can…​                                                                                               |
-|----------|-----------------------------------------------|----------------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------|
-| `* * *`  | student                                       | add an internship company and role that I have applied to                              | keep track of which company and which roles I have applied for, especially when I have many applications      |
-| `* * *`  | student                                       | update an internship position that I have applied to                                   | keep the tracker updated on the current state of my internship application                                    |
-| `* * *`  | student                                       | add an interview date and time to an internship application                            | track when my interview for that particular internship application is coming up                               |
-| `* * *`  | student                                       | view the list of commands for use                                                      | familiarize myself with them and increase efficiency when performing operations on the application            |
-| `* * *`  | student                                       | keep track of the stage of my application                                              | know which stages I am at for each application and thereafter what to prepare for it                          |
-| `* * *`  | student                                       | delete an internship that I am not interested in anymore                               | get rid of internship applications that are not relevant to me anymore                                        |
-| `* * *`  | forgetful student                             | sort the list of internship applications by dates                                      | see and remember which interviews are upcoming to better prepare for them in case I have forgotten about them |
-| `* * *`  | student preparing for upcoming internships    | view daily tips to aid in my learning                                                  | be better prepared for the technical interviews                                                               |
-| `* * *`  | student preparing for technical interviews    | conveniently do practice questions                                                     | be better prepared for my technical interviews                                                                |
-| `* * *`  | student who got rejected by all the companies | clear the list of internship applications                                              | I can start anew                                                                                              |
-| `* * *`  | student                                       | add an expiry date and time to an application that is in the “Online Assessment” stage.| keep track of when I have to complete the Online Assessment by                                                |
-| `* * *`  | student who constantly changes my mind        | redo an undone command                                                                 | revert back the changes I had originally made                                                                 |
-| `* * `   | student                                       | filter my internship applications according to position                                | view all my internship applications for that particular position that I am interested in                      |
-| `*`      | student                                       | rank all my internship applications                                                    | decide which applications that I have to focus on more.                                                       |
-| `*`      | easily confused student                       | prevent myself from adding the same internship application twice                       | I dont get distracted by duplicate internships                                                                |
+| Priority | As a …​                                       | I want to …​                                                                                  | So that I can…​                                                                                               |
+|----------|-----------------------------------------------|-----------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------|
+| `* * *`  | student                                       | add an internship company and role that I have applied to                                     | keep track of which company and which roles I have applied for, especially when I have many applications      |
+| `* * *`  | student                                       | update an internship position that I have applied to                                          | keep the tracker updated on the current state of my internship application                                    |
+| `* * *`  | student                                       | add an interview date and time to an internship application                                   | track when my interview for that particular internship application is coming up                               |
+| `* * *`  | student                                       | view the list of commands for use                                                             | familiarize myself with them and increase efficiency when performing operations on the application            |
+| `* * *`  | student                                       | keep track of the stage of my application                                                     | know which stages I am at for each application and thereafter what to prepare for it                          |
+| `* * *`  | student                                       | delete an internship that I am not interested in anymore                                      | get rid of internship applications that are not relevant to me anymore                                        |
+| `* * *`  | forgetful student                             | sort the list of internship applications by dates                                             | see and remember which interviews are upcoming to better prepare for them in case I have forgotten about them |
+| `* * *`  | student preparing for upcoming internships    | view daily tips to aid in my learning                                                         | be better prepared for the technical interviews                                                               |
+| `* * *`  | student preparing for technical interviews    | conveniently do practice questions                                                            | be better prepared for my technical interviews                                                                |
+| `* * *`  | student who got rejected by all the companies | clear the list of internship applications                                                     | I can start anew                                                                                              |
+| `* * *`  | student                                       | add an expiry date and time to an application that is in the “Online Assessment” stage.       | keep track of when I have to complete the Online Assessment by                                                |
+| `* * *`  | student who constantly changes my mind        | redo an undone command                                                                        | revert back the changes I had originally made                                                                 |
+| `* * *`  | student                                       | view stage specific preparatory tips                                                          | see how I can prepare before my stage specific deadline.                                                      |
+| `* * `   | student                                       | filter my internship applications according to position                                       | view all my internship applications for that particular position that I am interested in                      |
+| `* *`    | forgetful student                             | easily access tips specific to each internship based on the current stage                     | quickly see a list of things to prepare for an upcoming internship stage deadline.                            |
+| `*`      | student                                       | rank all my internship applications                                                           | decide which applications that I have to focus on more.                                                       |
+| `*`      | easily confused student                       | prevent myself from adding the same internship application twice                              | I dont get distracted by duplicate internships                                                                |
 | `*`      | student                                       | move an existing application to the "Rejection" stage and provide a reason why I got rejected | keep track of common trends or reasons for my failed applications                                             |
 | `*`      | broke student                                 | sort the internships based on pay                                                             | determine which applications are more worth it in this current economic state.                                |
 | `*`      | less experienced student with CLI             | view the list of commands                                                                     | familiarise myself with the commands.                                                                         |
 | `*`      | less experienced student                      | view some helpful resources                                                                   | understand the hiring process and tech landscapes better.                                                     |
 | `*`      | anxious student                               | switch to a calender view                                                                     | easily see all my upcoming interviews/OAs/expiring offers                                                     |
-| `* * *`  | student                                       | view stage specific prepatory tips                                                            | see how I can prepare before my stage specific deadline.
-| `*`      | student                                       | create a todo list for each internship entry                                                  | keep track of what I've done and what I've yet to do to prepare.
-| `* *`    | forgetful student                             | easily access tips specific to each internship based on the current stage                     | quickly see a list of things to prepare for an upcoming internship stage deadline.
-
-
+| `*`      | student                                       | create a todo list for each internship entry                                                  | keep track of what I've done and what I've yet to do to prepare.                                              |
 
 *{More to be added}*
 
